@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'BookListApi',
-    'debug_toolbar'
+    'debug_toolbar',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -144,6 +145,7 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES':[
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
 
     ],
   
@@ -152,4 +154,11 @@ REST_FRAMEWORK = {
         'anon': '2/minute',  # Limits anonymous requests to 2 per minute
         'user': '2/minute',  # Example: Limits authenticated user requests to 1000 per day
     },
+}
+
+
+DJOSER = {
+    "USER_ID_FIELD":"username",
+    # "LOGIN_FIELD":"email",
+
 }
