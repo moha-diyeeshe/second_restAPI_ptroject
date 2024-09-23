@@ -146,4 +146,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
 
     ],
+  
+
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '2/minute',  # Limits anonymous requests to 2 per minute
+        'user': '2/minute',  # Example: Limits authenticated user requests to 1000 per day
+    },
 }

@@ -75,5 +75,14 @@ def manager_view(request):
     
 
 @api_view()
+@throttle_classes([AnonRateThrottle])
 def throttle_check(request):
     return Response({"message":"throtelling"})
+
+
+
+@api_view()
+@permission_classes([IsAuthenticated])
+@throttle_classes([UserRateThrottle])
+def throttle_check_auth(request):
+    return Response({"message":"for logged user only"})
