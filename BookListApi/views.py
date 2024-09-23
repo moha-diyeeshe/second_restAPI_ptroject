@@ -8,7 +8,8 @@ from rest_framework import generics
 from .serialiazers import MenuItemSerialiazers
 from django.core.paginator import Paginator,EmptyPage
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes,throttle_classes
+from rest_framework.throttling import UserRateThrottle,AnonRateThrottle
 
 # Create your views here.
 @api_view(['GET'])
@@ -61,3 +62,18 @@ def Single_item(request,pk):
 @permission_classes([IsAuthenticated])
 def secret(request):
     return Response({"message":"some secret message"})
+
+
+
+@api_view()
+@permission_classes([IsAuthenticated])
+def manager_view(request):
+    if request.user.groups.filter(name='manager').exists():
+     return Response({"message":"only manager can see it"})
+    else:
+        return Response({"message":"is not allowed this "},403)
+    
+
+@api_view()
+def throttle_check(request):
+    return Response({"message":"throtelling"})
