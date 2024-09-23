@@ -6,6 +6,7 @@ from rest_framework import status
 from .models import MenuItem
 from rest_framework import generics
 from .serialiazers import MenuItemSerialiazers
+from django.core.paginator import Paginator,EmptyPage
 
 # Create your views here.
 @api_view(['GET'])
@@ -17,8 +18,29 @@ def index(request):
 @api_view(['GET','POST'])
 def menu_item(request):
     if request.method == 'GET':
-        item = MenuItem.objects.select_related('category').all()
-        serializer_item = MenuItemSerialiazers(item, many = True)
+        items = MenuItem.objects.select_related('category').all()
+        category_name = request.query_params.get('category')
+        to_price = request.query_params.get('to_price')
+        search = request.query_params.get('search')
+        ordering = request.query_params.get('ordering')
+        per_page = request.query_params.get('per_page',default=4)
+        page = request.query_params.get('page',default=1)
+
+        if category_name:
+            items = items.filter(category__title = category_name)
+        if to_price:
+            items = items.filter(price__lte=to_price)
+        if search:
+            items = items.filter(title__icontains=search)
+        if ordering:
+            ordering_field = ordering.split(",")
+            items = items.order_by(*ordering_field)
+        paginator = Paginator(items,per_page=per_page)
+        try:
+            items = paginator.page(number=page)
+        except EmptyPage:
+            items=[]
+        serializer_item = MenuItemSerialiazers(items, many = True)
         return Response(serializer_item.data)
     if request.method == 'POST':
         serializer_item = MenuItemSerialiazers(data = request.data)
@@ -30,9 +52,3 @@ def Single_item(request,pk):
     item = get_object_or_404(MenuItem,pk = pk)    
     serializer_class = MenuItemSerialiazers(item)
     return Response(serializer_class.data)
-
-
-
-
-
-
