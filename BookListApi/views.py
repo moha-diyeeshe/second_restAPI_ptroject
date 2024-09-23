@@ -7,6 +7,8 @@ from .models import MenuItem
 from rest_framework import generics
 from .serialiazers import MenuItemSerialiazers
 from django.core.paginator import Paginator,EmptyPage
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 # Create your views here.
 @api_view(['GET'])
@@ -52,3 +54,10 @@ def Single_item(request,pk):
     item = get_object_or_404(MenuItem,pk = pk)    
     serializer_class = MenuItemSerialiazers(item)
     return Response(serializer_class.data)
+
+
+
+@api_view()
+@permission_classes([IsAuthenticated])
+def secret(request):
+    return Response({"message":"some secret message"})
